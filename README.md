@@ -17,15 +17,26 @@ Training and testing the traffic model and scenario generation requires download
 ```
 data/nuscenes
 |__ trainval
-|______ v1.0-trainval
-|___________ *.json
-|______ maps
-|___________ basemap
-|___________ expansion
-|___________ prediction
-|___________ *.png
+|   |______ v1.0-trainval
+|   |   |___________ *.json
+|   |______ maps
+|       |___________ basemap
+|       |___________ expansion
+|       |___________ prediction
+|       |___________ *.png
+
 ```
 The code also supports the mini dataset in the exact same structure.
+In this file structure:
+
+    data/nuscenes/trainval/v1.0-trainval: This directory contains the JSON files with the metadata of the nuScenes dataset. These JSON files contain information about scenes, samples, annotations, and other relevant data.
+
+    data/nuscenes/trainval/maps: This directory contains various map-related data.
+        basemap: The basemap represents the static elements of the map, such as roads, lanes, and intersections.
+        expansion: The expansion map contains additional map information, typically used for generating scenarios beyond the standard basemap coverage.
+        prediction: The prediction map is used to represent dynamic elements on the map, such as the predicted motion of other vehicles, pedestrians, etc.
+
+    *.png: These are image files in PNG format, which might be used for visualization or any specific purposes within the nuScenes dataset.
 
 ## Additional Downloads
 Weights for the pre-trained traffic models can be [downloaded here](https://drive.google.com/drive/folders/1n3j7gT_SA9RoaLosz7z8ngaQhlfV6oRz?usp=sharing) and should be placed in a directory called `model_ckpt` to be used by the config files described below. We provide models trained on _car_ and _trucks_ only (as used in the main paper) and one trained on all categories (discussed in supplementary document).
