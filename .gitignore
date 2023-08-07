@@ -118,6 +118,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+python/strive_env
 
 # Spyder project settings
 .spyderproject
@@ -150,3 +151,12 @@ storage/
 #*.png
 
 *map_storage/
+# checkpoints
+model_ckpt/*.pth
+model_ckpt/*.txt
+
+# dataset
+data/nuscenes/*
+
+# scenarios
+data/strive_scenarios/*
