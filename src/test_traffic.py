@@ -44,6 +44,10 @@ def parse_cfg():
                         help="If given, shuffles test dataset.")
     parser.set_defaults(shuffle_test=False)
 
+    # strive-format scenario examples to load into dataset (e.g. adversarial scenarios)
+    parser.add_argument('--scenario_path', type=str, default=None,
+                        help='Directory to load additional scenarios from.')
+
     #
     # test options
     #
@@ -309,7 +313,8 @@ def main():
                             npast=cfg.past_len,
                             nfuture=cfg.future_len,
                             reduce_cats=cfg.reduce_cats,
-                            use_challenge_splits=cfg.use_challenge_splits
+                            use_challenge_splits=cfg.use_challenge_splits,
+                            scenario_path=cfg.scenario_path # added strive_scenarios to dataset
                             )
 
     # create loaders    

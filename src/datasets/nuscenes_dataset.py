@@ -108,7 +108,7 @@ class NuScenesDataset(Dataset):
         assert split in ['train', 'val', 'test']
         self.version = version
         self.data_path = data_path
-        self.use_nusc = self.data_path is not None
+        self.use_nusc = False # = self.data_path is not None # using only strive scenarion examples (from scenario_path) instead of original NuScenes data to test model
         self.split = split
         self.map_env = map_env
         self.map_list = self.map_env.map_list
@@ -204,7 +204,7 @@ class NuScenesDataset(Dataset):
             print('Num adversarial subseq: %d' % (len(scenario_seq_map)))
 
         self.data_len = len(self.seq_map)
-
+        
         print('Num scenes: %d' % (len(self.data)))
         print('Num subseq: %d' % (self.data_len))
 
@@ -247,7 +247,7 @@ class NuScenesDataset(Dataset):
             fut = scene['scene_fut'].numpy()
 
             attack_t = scene['attack_t']
-
+            
             # need to compute velocities for future (already have for past)
             fut_traj = np.concatenate([past[:, -1:, :4], fut], axis=1)
             t = np.arange(fut_traj.shape[1])*self.dt
@@ -280,13 +280,14 @@ class NuScenesDataset(Dataset):
                     'k' : k[aidx]
                 }
                 scene2info[sname]['agt%03d' % (aidx)] = info
-
+            
             # update data map
             scene2map[sname] = (scene['map'], self.map_list.index(scene['map']))
             T = ego_traj.shape[0]
-            scene_seq = [(sname, start_idx) for start_idx in range(0, T - self.seq_len, 1)]
+            # scene_seq = [(sname, start_idx) for start_idx in range(0, T - self.seq_len, 1)]
+            scene_seq = [(sname, 0)] # because T = self.seq_len when using strive scenario generated with default values.
             seq_map.extend(scene_seq)
-
+        
         return scene2info, seq_map, scene2map
 
     def get_scenes(self):
@@ -585,7 +586,7 @@ class NuScenesDataset(Dataset):
                 # update data map
                 scene_seq = [(scene, start_idx) for start_idx in range(0, T - self.seq_len, self.seq_interval)]
                 seq_map.extend(scene_seq)
-
+        
         return scene2info, seq_map
 
     def __len__(self):
