@@ -108,7 +108,7 @@ class NuScenesDataset(Dataset):
         assert split in ['train', 'val', 'test']
         self.version = version
         self.data_path = data_path
-        self.use_nusc = False # = self.data_path is not None # using only strive scenarion examples (from scenario_path) instead of original NuScenes data to test model
+        self.use_nusc = self.data_path is not None # using only strive scenarion examples (from scenario_path) instead of original NuScenes data to test model
         self.split = split
         self.map_env = map_env
         self.map_list = self.map_env.map_list

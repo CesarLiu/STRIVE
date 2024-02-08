@@ -7,3 +7,4 @@ torch-scatter==2.0.7
 torch-sparse==0.6.10
 torch-geometric==1.7.1
 nuscenes-devkit==1.1.5
+bark-simulator==1.4.10

@@ -113,11 +113,37 @@ class NuScenesMapEnv(object):
                 road_img = np.clip(np.sum(road_img, axis=0), 0, 1).reshape((1, cur_msize[0], cur_msize[1])).astype(np.uint8)
                 map_layers.append(road_img)
 
+                # visualize road_img (map mask)
+                # figsize = (12, 4)
+                # fig, ax = nmap.render_map_mask(None, 0.0, road_layers, cur_msize, figsize=figsize, n_row=1)
+
+                # import matplotlib.pyplot as plt #for plotting map image
+                # plt.suptitle('drivable area')
+                # plt.imshow(road_img[0])
+                # plt.show()
+
             # draw any other layers separately (e.g. walkway)
             other_layers = [lay for lay in self.layer_names if lay not in self.road_list]
             if len(other_layers) > 0:
                 other_img = nmap.get_map_mask(None, 0.0, other_layers, cur_msize)
                 map_layers.append(other_img)
+
+                # visualize other_img (map mask)
+                # figsize = (12, 4)
+
+                # fig, ax = nmap.render_map_mask(None, 0.0, other_layers, cur_msize, figsize=figsize, n_row=1)
+
+                # plt.suptitle('carpark area')
+                # plt.imshow(other_img[0])
+                # plt.show()
+                
+                # plt.suptitle('road divider')
+                # plt.imshow(other_img[1])
+                # plt.show()
+                
+                # plt.suptitle('lane divider')
+                # plt.imshow(other_img[2])
+                # plt.show()                
 
             # Create single image
             map_img = np.concatenate(map_layers, axis=0)
