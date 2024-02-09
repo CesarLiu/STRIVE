@@ -160,4 +160,4 @@ When creating `XodrMapEnv` in STRIVE, create **lane graph of the OpenDrive map**
 
 When creating `XodrMapEnv` in STRIVE, create rasterized images for **all of the maps** stored in the given map directory and included in `map_list`.
 - Note that all maps should be padded to the same size `(max_H, max_W)` (as in original STRIVE `MapEnv` class).
-- All rasterized maps are stored in `xodr_raster` with shape `(M, 4, max_h, max_w)` and `M`: number of maps.
+- All rasterized maps are stored in `xodr_raster` with shape `(M, 4, max_H, max_W)` and `M`: number of maps.
