@@ -247,8 +247,10 @@ class XodrMapEnv():
         if plot:
             # plot map layers
             self.PlotRasterMap(x_grid, y_grid, drivable_area_img[0], grid_size, 'drivable_area')
-            # self.PlotRasterMap(x_grid, y_grid, road_divider_img[0], grid_size, 'road_divider') 
-            # self.PlotRasterMap(x_grid, y_grid, lane_divider_img[0], grid_size, 'lane_divider')
+            self.PlotRasterMap(x_grid, y_grid, road_divider_img[0], grid_size, 'road_divider') 
+            self.PlotRasterMap(x_grid, y_grid, lane_divider_img[0], grid_size, 'lane_divider')
+            self.PlotRasterMap(x_grid, y_grid, carpark_area_img[0], grid_size, 'carpark_area')
+
         
         # create single image
         map_img = np.concatenate(map_layers, axis=0)
@@ -462,7 +464,7 @@ class XodrMapEnv():
             plot of rasterized map as binary image (mask)
         """
         # plot rasterized map image
-        plt.imshow(raster_map, extent=[x_grid[0], x_grid[-1], y_grid[0], y_grid[-1]], 
+        plt.imshow(raster_map, extent=[x_grid[0], x_grid[-1], y_grid[0], y_grid[-1]], #extent=[880, 1020, 990, 1020],
                 origin='lower', cmap='binary')
         
         # add axis labels and title

@@ -590,7 +590,7 @@ def main():
     # pix_per_m = 1.0/grid_size
    
     # set plot = True for plotting rasterized map image layers
-    plt = False
+    plt = True
 
     map_env = XodrMapEnv(map_data_path=map_data_path,
                          mname=mname, 
