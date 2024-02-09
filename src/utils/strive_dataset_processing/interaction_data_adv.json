@@ -30,7 +30,7 @@
     "simulation": {
         "step_time": 0.1,
         "real_time_factor": 1,
-        "simulation_time_steps": 15
+        "simulation_time_steps": 16
     },
     "agent": {
         "MaxHistoryLength": 50

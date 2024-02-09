@@ -6,7 +6,7 @@
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
-from utils.strive_dataset_processing.strive_dataset_scenario_generation import StriveDatasetScenarioGeneration
+from utils.interaction_dataset.interaction_dataset_scenario_generation import InteractionDatasetScenarioGeneration
 from bark.runtime.commons.parameters import ParameterServer
 from bark.runtime.viewer.matplotlib_viewer import MPViewer
 from bark.runtime.viewer.video_renderer import VideoRenderer
@@ -14,13 +14,14 @@ from bark.examples.paths import Data
 import os
 import argparse
 
+
 def main():
   # set you json config that contains a map and matching tracks.
-  # param_filename = Data.params_data("interaction_example")
-  param_filename = "/home/mette/STRIVE/src/utils/strive_dataset_processing/interaction_data_adv.json" # path to config file (json)
- 
+  # param_server = ParameterServer(filename=Data.params_data("interaction_example"))
+  param_filename = "/home/mette/STRIVE/src/utils/interaction_dataset/interaction_tracks_05.json" # path to config file (json)
+
   param_server = ParameterServer(filename=param_filename)
-  scenario_generation = StriveDatasetScenarioGeneration(num_scenarios=1,
+  scenario_generation = InteractionDatasetScenarioGeneration(num_scenarios=1,
                                                             random_seed=0,
                                                             params=param_server)
 
@@ -44,6 +45,6 @@ def main():
     video_renderer.drawWorld(world_state)
 
   # video_renderer.export_video(filename="/tmp/interaction_dataset", remove_image_dir=True)
-  
+
 if __name__ == "__main__":
     main()
