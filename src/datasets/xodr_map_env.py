@@ -60,6 +60,9 @@ class XodrMapEnv():
             L (int): number of pixels along length of vehicle to render crop with
             W (int): number of pixels along width of vehicle to render crop with
             device (str): the device to store the rasterized maps on
+            load_lanegraph (boolean): if true, loads the lane graph as well
+            lanegraph_res_meters (float): resolution at which to discretize lane graph
+            lanegraph_eps:
             pix_per_m (int): resolution to discretize map layers
             plot (boolean): True for generating plots of drivable area (for other map layers: uncomment lines below)
         """
@@ -113,7 +116,8 @@ class XodrMapEnv():
         # load lane graphs
         if load_lanegraph:
             print('Loading lane graphs...')
-            self.lane_graphs = {map_name: nutils.process_lanegraph(nmap, lanegraph_res_meters, lanegraph_eps) for map_name,nmap in self.xodr_maps.items()}
+            # TODO implement process_lanegraphs for Xodr map
+            # self.lane_graphs = {map_name: nutils.process_lanegraph(nmap, lanegraph_res_meters, lanegraph_eps) for map_name,nmap in self.xodr_maps.items()}
         
         # get bounding box coordinates of full map
         map_bb = world.bounding_box # = (Point2d: x: -49.9756, y: -50.0556, Point2d: x: 49.9256, y: 50.1256)
@@ -263,9 +267,9 @@ class XodrMapEnv():
         self.xodr_dx = torch.from_numpy(np.stack(self.xodr_dx, axis=0)).to(device)
         
         print('xodr_raster: ', self.xodr_raster.shape)
-        # output: self.xodr_raster.shape:  torch.Size([1, 4, 99, 1253])
-
-        # TODO replace in final version (for reusing STRIVE functions)
+        
+        # needed for compatibility with STRIVE functions
+        # TODO check where these variables are called in orginal STRIVE functions and fix names
         self.nusc_raster = self.xodr_raster
         self.nusc_dx = self.xodr_dx
 
