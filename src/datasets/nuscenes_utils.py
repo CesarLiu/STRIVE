@@ -649,7 +649,7 @@ def viz_map_crop_video(x, outdir, car_kin=None, car_lw=None, viz_traj=False, ind
                         car_kin=car_kin[:, s:s+1, t:t+1, :], car_lw=car_lw, 
                         viz_traj=viz_traj, indiv=indiv, car_colors=car_colors,
                         car_alpha=car_alpha)
-        create_video(os.path.join(cur_outdir, 'frame%04d.png'), cur_outdir + '.mp4', fps)
+        # create_video(os.path.join(cur_outdir, 'frame%04d.png'), cur_outdir + '.mp4', fps)
         shutil.rmtree(cur_outdir)
 
 def viz_map_crop(x, out_path, car_kin=None, car_lw=None, gt_kin=None, viz_traj=False, indiv=True,

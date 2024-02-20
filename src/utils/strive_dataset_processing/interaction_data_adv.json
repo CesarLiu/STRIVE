@@ -1,0 +1,38 @@
+{
+    "Scenario": {
+        "Generation": {
+            "StriveDatasetScenarioGeneration": {
+                "MapFilename": "../STRIVE/data/interaction/DR_DEU_Merging_MT_v01_shifted.xodr",
+                "TrackFilename": "../STRIVE/data/strive/vehicle_tracks_005_adv.json",
+                "TrackIds": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "EgoTrackId": 5,
+                "StartTs": 36200,
+                "EndTs": 41000
+            }
+        }
+    },
+    "Visualization": {
+        "Agents": {
+            "Color": {
+                "UseColormapForOtherAgents": true
+            },
+            "DrawAgentId": true,
+            "DrawEvalGoals": false,
+            "DrawHistory": true
+        }
+    },
+    "simulation": {
+        "step_time": 0.1,
+        "real_time_factor": 1,
+        "simulation_time_steps": 16
+    },
+    "agent": {
+        "MaxHistoryLength": 50
+    }
+}

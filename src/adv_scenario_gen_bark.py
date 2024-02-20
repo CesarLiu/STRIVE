@@ -17,8 +17,10 @@ from datasets import nuscenes_utils as nutils
 from models.traffic_model import TrafficModel
 from losses.traffic_model import compute_coll_rate_env, compute_coll_rate_veh
 
-from datasets.nuscenes_dataset import NuScenesDataset
-from datasets.map_env import NuScenesMapEnv
+# from datasets.nuscenes_dataset import NuScenesDataset
+# from datasets.map_env import NuScenesMapEnv
+from datasets.interaction_dataset import InteractionDataset
+from datasets.xodr_map_env import XodrMapEnv
 from utils.common import dict2obj, mkdir
 from utils.logger import Logger, throw_err
 from utils.torch import get_device, load_state
@@ -29,6 +31,12 @@ from utils.sol_optim import run_find_solution_optim, compute_sol_success
 from utils.init_optim import run_init_optim
 from planners.planner import PlannerConfig
 from utils.config import get_parser, add_base_args
+
+import bark
+from utils.interaction_dataset.interaction_dataset_scenario_generation import InteractionDatasetScenarioGeneration
+# from bark.runtime.scenario.scenario_generation.interaction_dataset_scenario_generation import InteractionDatasetScenarioGeneration
+from bark.runtime.commons.parameters import ParameterServer
+from bark.examples.paths import Data
 
 def parse_cfg():
     parser = get_parser('Adversarial scenario generation')
@@ -166,6 +174,8 @@ def run_one_epoch(data_loader, batch_size, model, map_env, device, out_path, los
                 # sample_pred = model.sample(scene_graph, map_idx, map_env, 20, include_mean=True)
 
             empty_cache = True
+
+            print('Checking feasibility...')
             # determine if this sequence is feasible for scenario generation
             feasible, feasible_time, feasible_dist = determine_feasibility_nusc(sample_pred['future_pred'],
                                                                                 model.get_normalizer(),
@@ -176,7 +186,6 @@ def run_one_epoch(data_loader, batch_size, model, map_env, device, out_path, los
                                                                                 check_non_drivable_separation=feasibility_check_sep,
                                                                                 map_env=map_env,
                                                                                 map_idx=map_idx)
-
             if planner_name == 'ego':
                 # make sure the ego "planner" has max velocity above some thresh for
                 # it to be considered an interesting scenario
@@ -568,28 +577,58 @@ def main():
 
     # load dataset
     # first create map environment
-    data_path = os.path.join(cfg.data_dir, cfg.data_version)
-    map_env = NuScenesMapEnv(data_path,
-                            bounds=cfg.map_obs_bounds,
-                            L=cfg.map_obs_size_pix,
-                            W=cfg.map_obs_size_pix,
-                            layers=cfg.map_layers,
-                            device=device,
-                            load_lanegraph=(cfg.planner=='hardcode'),
-                            lanegraph_res_meters=1.0
-                            )
-    test_dataset = NuScenesDataset(data_path, map_env,
-                            version=cfg.data_version,
-                            split=cfg.split,
-                            categories=cfg.agent_types,
-                            npast=cfg.past_len,
-                            nfuture=cfg.future_len,
-                            seq_interval=cfg.seq_interval,
-                            randomize_val=True,
-                            val_size=cfg.val_size,
-                            reduce_cats=cfg.reduce_cats
-                            # scenario_path=cfg.scenario_path # added strive_scenarios to dataset
-                            )
+    print('Creating map environment...')
+    
+    map_data_path = "data/interaction/"
+    mname = "DR_DEU_Merging_MT_v01_shifted"
+    map_file_name = os.path.join(map_data_path+str(mname)+'.xodr')
+    # using default paramter values from STRIVE
+    pix_per_m = 4 # corresponsing grid_size = 0.25
+    
+    # alternatively: set grid size manually
+    # grid_size = 0.1
+    # pix_per_m = 1.0/grid_size
+   
+    # set plot = True for plotting rasterized map image layers
+    plt = True
+
+    map_env = XodrMapEnv(map_data_path=map_data_path,
+                         mname=mname, 
+                         pix_per_m=pix_per_m, 
+                         plot=plt, 
+                         device=device
+                         # TODO implement loading lanegraphs for XodrMapEnv (analogous to MapEnv)
+                         # load_lanegraph=(cfg.planner=='hardcode')
+                        )
+ 
+    print('Creating BARK scenarios from INTERACTION example...')
+    # path to json file for initalizing parameter server
+    # param_filename = "/home/mette/STRIVE/src/utils/interaction_dataset/interaction_example.json"
+    param_filename = "/home/mette/STRIVE/src/utils/interaction_dataset/interaction_tracks_05.json" 
+    
+    param_server = ParameterServer(filename=param_filename)
+    # param_server = ParameterServer(filename=Data.params_data("interaction_example"))
+
+    # generating BARK scenarios using InteractionDatasetScenarioGeneration class from BARk (copied)
+    # TODO use InteractionDatasetScenarioGenerationFull to generate list containing more than one scenario
+    scenario_generation = InteractionDatasetScenarioGeneration(num_scenarios=1,
+                                                            random_seed=0,
+                                                            params=param_server)
+   
+    bark_scenarios = scenario_generation.create_scenarios(param_server, 1)
+    
+    # using default paramter values from STRIVE
+    npast = 4 # for BARK interaction example
+    nfuture = 12
+    
+    print('Creating INTERACTION Dataset for STRIVE...')
+    test_dataset = InteractionDataset(bark_scenarios,
+                                      map_env,
+                                      npast=npast,
+                                      nfuture=nfuture,
+                                      categories=cfg.agent_types,
+                                      # scenario_path=cfg.scenario_path # adapt config file to load scenario from STRIVE scenario file (json)
+                                      )
 
     # create loaders    
     test_loader = GraphDataLoader(test_dataset,
@@ -600,6 +639,7 @@ def main():
                                     worker_init_fn=lambda _: np.random.seed()) # get around numpy RNG seed bug
 
     # create model
+    print('Building traffic model...')
     model = TrafficModel(cfg.past_len, cfg.future_len, cfg.map_obs_size_pix, len(test_dataset.categories),
                         map_feat_size=cfg.map_feat_size,
                         past_feat_size=cfg.past_feat_size,

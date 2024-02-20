@@ -7,9 +7,9 @@
 ## Environment Setup
 > Note: This codebase has been tested primarily on Ubuntu 18.04 with Python 3.6, PyTorch 1.9, and CUDA 11.1.
 
-* Create a virtual environment with `python3 -m venv strive_env` and activate it `source strive_env/bin/activate`. 
+* Create a conda virtual environment with `conda create -n nv_strive_env python=3.7` and activate it `conda activate nv_strive_env`. 
+* Install cuda toolkit and pytorch: `conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=11.1 -c pytorch -c conda-forge`
 * Update pip with `pip install --upgrade pip`
-* Install numpy `pip install numpy==1.19.5` first.
 * Install remaining dependencies with `pip install -r requirements.txt`. Note this requirements file contains exact versions, but they may need to be changed based on your setup (however, please **ensure the nuScenes devkit is the specified version**, or you may run into issues).
 
 ## nuScenes Dataset
