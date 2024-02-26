@@ -43,7 +43,7 @@ def main():
     world_state.Step(sim_step_time)
     video_renderer.drawWorld(world_state)
 
-  # video_renderer.export_video(filename="/tmp/interaction_dataset", remove_image_dir=True)
+  video_renderer.export_video(filename="./out/interaction_dataset", remove_image_dir=True)
   
 if __name__ == "__main__":
     main()

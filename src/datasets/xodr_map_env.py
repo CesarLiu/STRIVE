@@ -538,3 +538,28 @@ class XodrMapEnv():
 
         return local_objs, pix_objlw
 
+    def get_map_crop_pos(self, pos, mapixes,
+                          bounds=None,
+                          L=None,
+                          W=None):
+        '''
+        Render local crops around given global positions (assumed UNNORMALIZED).
+
+        :param pos: batched positions (N x 4) (x,y,hx,hy) in .lw (N x 2) (x,y)
+        :param mapixes: the map index of each batch in the scene graph (N,)
+        :params bounds, L, W: overrides bounds, L, W set in constructor
+
+        :returns map_crop: N x C x H x W
+        '''
+        device = pos.device
+        NA = pos.size(0)
+
+        bounds = self.bounds if bounds is None else bounds
+        L = self.L if L is None else L
+        W = self.W if W is None else W
+
+        # render by indexing into pre-rasterized binary maps
+        map_obs = nutils.get_map_obs(self.xodr_raster, self.xodr_dx, pos,
+                                     mapixes, bounds, L=L, W=W).to(device)
+        
+        return map_obs
